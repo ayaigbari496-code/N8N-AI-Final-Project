@@ -1,0 +1,142 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e2700c2d-3ad6-4b0b-b1e9-dcfee37a78a5",
+      "name": "When chat message received",
+      "webhookId": "cdc5e4b8-6566-434f-896a-956ca5871f6b"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You אתה בוט שירות הלקוחות הרשמי של סלון היופי \"גלאם סטודיו\" (Glam Studio). התפקיד שלך הוא לענות ללקוחות אך ורק על סמך המידע שמתקבל מהכלי HTTP Request. עליך לענות בצורה אדיבה, מקצועית וקצרה בעברית.\nהגבלות קשיחות:\n1. ענה אך ורק על שאלות שקשורות ישירות לסלון גלאם סטודיו, השירותים שלו, המחירים שלו ושעות הפעילות שלו.\n2. אם הלקוח מנסה לכוון אותך לנושא אחר, שואל על סלון יופי אחר, או שואל על מתחרים, עליך לענות בדיוק בנוסח הבא: \"אני מצטער, אני בוט השירות של גלאם סטודיו ואני יכול לענות רק על שאלות שקשורות לעסק שלנו.\"are a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "78ff622f-77c8-40c1-9878-3e91262fbb27",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-flash-lite-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "e92875eb-3ca7-4ac8-8aaa-b3cdd067e956",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rITWSoRfsDD5OQS8",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        208
+      ],
+      "id": "53377629-e64b-4632-b2cc-f070689dcb45",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/ayaigbari496-code/n8n-salon-data/refs/heads/main/beauty_salon.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        416,
+        160
+      ],
+      "id": "e3605b63-f171-416e-811b-70c9800996f2",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "169cb119-8477-4fb0-a50a-95335bcfa80d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "363adabcf6c2f0c20110ac07e03f6c18969521626cd67e4a1cf1e9ea1dfc989f"
+  },
+  "nodeGroups": [],
+  "id": "KotP0NX2ekOiKky4",
+  "tags": []
+}
