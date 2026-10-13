@@ -1,0 +1,109 @@
+{
+  "name": "משימה 2 -   ",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook-task2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position":,
+      "id": "webhook-node",
+      "name": "Webhook_Receiver"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "אתה בוט פשוט שמייצר ברכת יום הולדת לפי הנתונים מהטופס. אם זה זכר תכתוב בלשון זכר, ואם נקבה בלשון נקבה."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.4,
+      "position":,
+      "id": "ai-agent-node",
+      "name": "AI_Agent_Greeting"
+    },
+    {
+      "parameters": {
+        "model": "models/gemini-flash-lite-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position":,
+      "id": "gemini-model-node",
+      "name": "Google_Gemini_Model"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "שם מקבל": "={{ $json.body.recipient_name }}",
+            "שם שולח": "={{ $json.body.sender_name }}",
+            "מין": "={{ $json.body.gender }}",
+            "נושא": "={{ $json.body.hobbies }}",
+            "ברכה": "={{ $prevNode.output }}",
+            "מייל": "={{ $json.body.recipient_email }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position":,
+      "id": "airtable-node",
+      "name": "Airtable_Save_Data"
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "send",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.brevo",
+      "typeVersion": 1,
+      "position":,
+      "id": "brevo-node",
+      "name": "Brevo_Send_Email"
+    },
+    {
+      "parameters": {
+        "options": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"status\": \"success\"\n}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position":,
+      "id": "respond-node",
+      "name": "Final_Webhook_Response"
+    }
+  ],
+  "connections": {
+    "Webhook_Receiver": {
+      "main": [[{"node": "AI_Agent_Greeting", "type": "main", "index": 0}]]
+    },
+    "Google_Gemini_Model": {
+      "ai_languageModel": [[{"node": "AI_Agent_Greeting", "type": "ai_languageModel", "index": 0}]]
+    },
+    "AI_Agent_Greeting": {
+      "main": [
+        [{"node": "Airtable_Save_Data", "type": "main", "index": 0}],
+        [{"node": "Brevo_Send_Email", "type": "main", "index": 0}]
+      ]
+    },
+    "Airtable_Save_Data": {
+      "main": [[{"node": "Final_Webhook_Response", "type": "main", "index": 0}]]
+    },
+    "Brevo_Send_Email": {
+      "main": [[{"node": "Final_Webhook_Response", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {},
+  "meta": {}
+}

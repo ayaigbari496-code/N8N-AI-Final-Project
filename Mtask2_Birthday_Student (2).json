@@ -1,0 +1,310 @@
+{
+  "name": "Mtask2_Birthday_Student",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "שם מקבל הברכה",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "שם מייצר הברכה"
+            },
+            {
+              "fieldLabel": "מין מקבל הברכה",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "זכר"
+                  },
+                  {
+                    "option": "נקבה "
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": " תיאור נושאים אהובים"
+            },
+            {
+              "fieldLabel": "מייל מקבל הברכה",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "49467082-c7a0-4266-af96-865293ba6845",
+      "name": "On form submission",
+      "webhookId": "b7906940-798f-46af-9323-99680bf84e37"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        208
+      ],
+      "id": "fd65227d-b32d-49db-b4ea-c359a157c0b1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YnEgBiaZZj2KwXo8",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=תכתוב ברכת יום הולדת קצרה ומרגשת.\nהברכה מיועדת עבור: {{ $json[\"שם מקבל הברכה\"] }}\nהברכה נכתבה על ידי: {{ $json[\"שם מייצר הברכה\"] }}\nמין מקבל הברכה הוא: {{ $json[\"מין מקבל הברכה\"] }}\nהנושאים שהברכה צריכה לכלול: {{ $json[\"תיאור נושאים אהובים\"] }}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8e4a0ebc-355c-4ab1-b666-ec1c2f96c2a6",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appARjm9ZpENOYtjy",
+          "mode": "list",
+          "cachedResultName": "Untitled Base",
+          "cachedResultUrl": "https://airtable.com/appARjm9ZpENOYtjy"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqvilRLjFcjlz2K",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appARjm9ZpENOYtjy/tblqvilRLjFcjlz2K"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "שם מייצר הברכה": "={{ $('On form submission').item.json[\"שם מייצר הברכה\"] }}\n",
+            "שם מקבל הברכה": "={{ $json[Object.keys($json)[0]] }}",
+            "Status": "Done",
+            "ברכה מיוצרת": "=•  {{ $('Basic LLM Chain').item.json[\"text\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "שם מקבל הברכה",
+              "displayName": "שם מקבל הברכה",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "שם מייצר הברכה",
+              "displayName": "שם מייצר הברכה",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ברכה מיוצרת",
+              "displayName": "ברכה מיוצרת",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachments",
+              "displayName": "Attachments",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "3ed3cead-73d9-4829-9ea3-79c6b8e2f88e",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Zmue3svE51Z6rYGs",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "subject": "מזל טוב",
+        "textContent": "={{ $json.fields['ברכה מיוצרת'] }}",
+        "sender": "ayaigbari496@gmail.com ",
+        "receipients": "ayaigbari496@gmail.com ",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.sendInBlue",
+      "typeVersion": 1,
+      "position": [
+        816,
+        0
+      ],
+      "id": "a8b65494-9559-4c15-a092-b597ac4938ab",
+      "name": "Send a transactional email",
+      "credentials": {
+        "sendInBlueApi": {
+          "id": "v14I6qCQZjeNaWXf",
+          "name": "Brevo account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Send a transactional email": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send a transactional email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4c74b7b0-929c-4670-a471-9209cded25b9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "363adabcf6c2f0c20110ac07e03f6c18969521626cd67e4a1cf1e9ea1dfc989f"
+  },
+  "nodeGroups": [],
+  "id": "a7paI09HBOKpfJwV",
+  "tags": []
+}
