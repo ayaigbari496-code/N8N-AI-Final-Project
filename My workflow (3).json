@@ -66,7 +66,7 @@
     },
     {
       "parameters": {
-        "url": "https://raw.githubusercontent.com/ayaigbari496-code/n8n-salon-data/refs/heads/main/beauty_salon.txt",
+        "url": "https://raw.githubusercontent.com/ayaigbari496-code/N8N-AI-Final-Project/refs/heads/main/beauty_salon.txt",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequestTool",
